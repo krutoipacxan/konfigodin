@@ -1,0 +1,11 @@
+{
+  "type": "dir",
+  "children": {
+    "data.bin": {
+      "type": "file",
+      "encoding": "base64",
+      "content": "iVBORw0KGgo="
+    },
+    "text.txt": {"type": "file", "content": "plain text\n"}
+  }
+}

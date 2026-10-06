@@ -9,11 +9,11 @@ echo "=== 2. Только --script ==="
 $EMU --script tests/emu/stage2_errors.esh < /dev/null
 echo "exit code: $?"
 
-echo "=== 3. Только --vfs (файл пока не читается) ==="
-$EMU --vfs tests/vfs/any.json < /dev/null
+echo "=== 3. Только --vfs ==="
+$EMU --vfs tests/vfs/minimal.json < /dev/null
 
 echo "=== 4. Оба параметра ==="
-$EMU --vfs tests/vfs/any.json --script tests/emu/stage2_no_exit.esh \
+$EMU --vfs tests/vfs/minimal.json --script tests/emu/stage2_no_exit.esh \
     < /dev/null
 
 echo "=== 5. Несуществующий скрипт ==="

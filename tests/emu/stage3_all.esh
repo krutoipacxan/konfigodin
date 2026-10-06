@@ -1,0 +1,9 @@
+vfs-info
+ls
+ls -l /tmp
+cd docs
+cd a b
+vfs-info extra
+foo
+exit abc
+exit

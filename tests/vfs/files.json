@@ -1,0 +1,8 @@
+{
+  "type": "dir",
+  "children": {
+    "readme.txt": {"type": "file", "content": "Hello, VFS!\n"},
+    "numbers.txt": {"type": "file", "content": "one\ntwo\nthree\n"},
+    "empty.txt": {"type": "file"}
+  }
+}

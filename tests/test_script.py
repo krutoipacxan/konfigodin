@@ -66,3 +66,6 @@ class AppTest(unittest.TestCase):
 
     def test_missing_script_fails(self):
         self.assertEqual(self.run_main(["--script", "/no/such"]), 1)
+
+    def test_bad_vfs_fails(self):
+        self.assertEqual(self.run_main(["--vfs", "/no/such.json"]), 1)

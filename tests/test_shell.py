@@ -51,3 +51,14 @@ class ShellTest(unittest.TestCase):
         shell.reader = lambda prompt: (_ for _ in ()).throw(EOFError())
         shell.repl()
         self.assertEqual(out.getvalue(), "exit\n")
+
+
+class VfsInfoTest(unittest.TestCase):
+    """Служебная команда vfs-info."""
+
+    def test_default_vfs_stats(self):
+        shell, out, _ = make_shell()
+        shell.run_line("vfs-info")
+        self.assertEqual(
+            out.getvalue(), "directories: 2\nfiles: 2\nmax depth: 2\n"
+        )

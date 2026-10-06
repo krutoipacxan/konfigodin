@@ -1,0 +1,6 @@
+{
+  "type": "dir",
+  "children": {
+    "bad.bin": {"type": "file", "encoding": "base64", "content": "!!!"}
+  }
+}

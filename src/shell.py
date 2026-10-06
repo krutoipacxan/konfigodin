@@ -7,6 +7,7 @@ from src.commands import COMMANDS
 from src.errors import ShellError
 from src.parser import parse_line
 from src.system import get_hostname, get_username
+from src.vfs import default_vfs
 
 
 def enable_line_editing():
@@ -21,8 +22,13 @@ def enable_line_editing():
 class Shell:
     """Состояние эмулятора и логика диалога с пользователем."""
 
-    def __init__(self, user=None, host=None, out=None, err=None):
-        """Создать оболочку; имя и хост по умолчанию берутся из ОС."""
+    def __init__(self, user=None, host=None, out=None, err=None, vfs=None):
+        """Создать оболочку.
+
+        Имя и хост по умолчанию берутся из ОС, VFS — из памяти.
+        """
+        self.vfs = vfs or default_vfs()
+        self.cwd = []
         self.user = user or get_username()
         self.host = host or get_hostname()
         self.out = out

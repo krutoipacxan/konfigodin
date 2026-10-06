@@ -1,0 +1,48 @@
+{
+  "type": "dir",
+  "children": {
+    "readme.txt": {"type": "file", "content": "Hello, VFS!\n"},
+    ".hidden": {"type": "file", "content": "secret\n"},
+    "bin": {
+      "type": "dir",
+      "owner": "root",
+      "children": {
+        "tool": {"type": "file", "encoding": "base64", "content": "AAECAwQ="}
+      }
+    },
+    "docs": {
+      "type": "dir",
+      "owner": "alice",
+      "group": "staff",
+      "children": {
+        "notes.txt": {
+          "type": "file",
+          "owner": "alice",
+          "group": "staff",
+          "content": "first line\nsecond line\n"
+        },
+        "projects": {
+          "type": "dir",
+          "owner": "alice",
+          "group": "staff",
+          "children": {
+            "alpha": {
+              "type": "dir",
+              "owner": "alice",
+              "group": "staff",
+              "children": {
+                "todo.txt": {
+                  "type": "file",
+                  "owner": "alice",
+                  "group": "staff",
+                  "content": "buy milk\nwrite code\n"
+                }
+              }
+            },
+            "beta.txt": {"type": "file", "content": "beta\n"}
+          }
+        }
+      }
+    }
+  }
+}

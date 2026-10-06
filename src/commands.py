@@ -1,7 +1,8 @@
-"""Команды эмулятора (на этом этапе — заглушки)."""
+"""Команды эмулятора (ls и cd пока заглушки)."""
 
 from src.args import check_arg_count
 from src.errors import ShellError, ShellExit
+from src.vfs import collect_stats
 
 EXIT_CODE_MASK = 0xFF
 
@@ -34,8 +35,16 @@ def cmd_exit(shell, args):
     raise ShellExit(code & EXIT_CODE_MASK)
 
 
+def cmd_vfs_info(shell, args):
+    """Служебная команда: статистика загруженной VFS."""
+    check_arg_count("vfs-info", args, 0, 0)
+    dirs, files, depth = collect_stats(shell.vfs.root)
+    return f"directories: {dirs}\nfiles: {files}\nmax depth: {depth}"
+
+
 COMMANDS = {
     "ls": cmd_ls,
     "cd": cmd_cd,
+    "vfs-info": cmd_vfs_info,
     "exit": cmd_exit,
 }
