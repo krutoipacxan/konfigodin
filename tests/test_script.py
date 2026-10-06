@@ -28,21 +28,21 @@ class ScriptTest(unittest.TestCase):
         self.shell = Shell("bob", "box", self.out, self.err)
 
     def test_shows_input_and_output(self):
-        path = write_temp("ls a\n")
+        path = write_temp("echo a b\n")
         self.addCleanup(os.remove, path)
         self.assertEqual(run_script(self.shell, path), 0)
         self.assertEqual(
             self.out.getvalue(),
-            "bob@box:~$ ls a\nls: args=['a']\n",
+            "bob@box:~$ echo a b\na b\n",
         )
 
     def test_skips_bad_lines_and_reports(self):
-        path = write_temp("foo\n\nls\ncd a b\n")
+        path = write_temp("foo\n\necho ok\ncd a b\n")
         self.addCleanup(os.remove, path)
         self.assertEqual(run_script(self.shell, path), 2)
         self.assertIn("line 1: skipped", self.err.getvalue())
         self.assertIn("line 4: skipped", self.err.getvalue())
-        self.assertIn("ls: args=[]", self.out.getvalue())
+        self.assertIn("ok", self.out.getvalue())
 
     def test_missing_script(self):
         with self.assertRaises(ScriptError):

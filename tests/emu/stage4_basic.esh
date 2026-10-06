@@ -1,0 +1,26 @@
+ls
+ls -l
+ls -a
+ls docs bin
+ls -l docs/notes.txt
+ls /nope
+ls -z
+cd docs/projects
+ls
+cd alpha
+ls -l
+cd ../../..
+cd ~/docs
+cd
+cd readme.txt
+cd nope
+cd a b
+rev readme.txt
+rev docs/notes.txt docs/projects/alpha/todo.txt
+rev
+rev docs
+rev nope.txt
+echo hello   world
+echo
+echo a b c
+exit

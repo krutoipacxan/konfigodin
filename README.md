@@ -6,7 +6,7 @@
 стандартная библиотека). Приглашение к вводу строится из реальных данных
 ОС: `username@hostname:~$`.
 
-## Состояние (этапы 1–3: REPL, конфигурация, VFS)
+## Состояние (этапы 1–4: REPL, конфигурация, VFS, основные команды)
 
 Реализовано:
 
@@ -14,8 +14,28 @@
   хоста реальной ОС;
 - парсер: ввод делится на команду и аргументы по пробелам;
 - сообщения об ошибках: неизвестная команда, неверные аргументы;
-- команды-заглушки `ls` и `cd` печатают своё имя и аргументы;
-- `exit [код]` завершает работу; Ctrl-D (EOF) тоже завершает работу.
+- `exit [код]` завершает работу; Ctrl-D (EOF) тоже завершает работу;
+- приглашение показывает текущий каталог VFS: `user@host:~/docs$`
+  (корень VFS обозначается `~`).
+
+### Команды (этап 4)
+
+Пути могут быть абсолютными (`/docs`), относительными, содержать `.` и
+`..`; префикс `~` означает корень VFS.
+
+| Команда | Описание |
+|---------|----------|
+| `ls [-a] [-l] [ПУТЬ...]` | содержимое каталога (по умолчанию текущего) или файл. `-a` — показать скрытые (`.name`), `-l` — подробно: тип (`d`/`-`), владелец, группа, размер, имя. Для нескольких путей перед списком каталога печатается `путь:` |
+| `cd [КАТАЛОГ]` | сменить текущий каталог; без аргумента — корень VFS |
+| `rev ФАЙЛ...` | вывести строки файлов VFS, развернув каждую (как `rev` в UNIX, аргументы — это файлы) |
+| `echo [СТРОКА...]` | вывести аргументы через пробел |
+| `vfs-info` | служебная: число каталогов, файлов, глубина VFS |
+| `exit [код]` | завершить работу |
+
+Ошибки (пишутся в stderr): `No such file or directory`,
+`Not a directory`, `Is a directory`, `invalid option`, `missing operand`,
+`too many arguments`, `command not found`. При первой ошибке команда
+прекращает работу (например, `ls a /nope`).
 
 ### Параметры командной строки (этап 2)
 
@@ -85,6 +105,7 @@ base64) выводятся как `emulator: ...`, код возврата 1.
 Скрипт реальной ОС для проверки всех параметров этапа 2:
 `sh tests/scripts/stage2_params.sh`.
 Скрипт для разных вариантов VFS: `sh tests/scripts/stage3_vfs.sh`.
+Скрипт этапа 4: `sh tests/scripts/stage4_basic.sh`.
 
 ## Пример интерактивного сеанса
 
@@ -129,4 +150,26 @@ max depth: 4
 
 $ python3 -m src --vfs tests/vfs/missing.json
 emulator: VFS file not found: tests/vfs/missing.json
+```
+
+## Пример: основные команды (этап 4)
+
+```
+$ python3 -m src --vfs tests/vfs/deep.json --script tests/emu/stage4_basic.esh < /dev/null
+root@vm:~$ ls -l
+d root     root       4096 bin
+d alice    staff      4096 docs
+- root     root         12 readme.txt
+root@vm:~$ cd docs/projects
+root@vm:~/docs/projects$ ls
+alpha  beta.txt
+root@vm:~/docs/projects$ cd ../../..
+root@vm:~$ rev docs/notes.txt
+enil tsrif
+enil dnoces
+root@vm:~$ cd nope
+cd: nope: No such file or directory
+script: tests/emu/stage4_basic.esh: line 16: skipped (error)
+root@vm:~$ echo hello   world
+hello world
 ```

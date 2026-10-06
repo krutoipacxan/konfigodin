@@ -43,9 +43,13 @@ class Shell:
         """Вывести текст в поток ошибок."""
         print(text, file=self.err or sys.stderr)
 
+    def location(self):
+        """Вернуть текущий каталог: корень VFS показывается как ~."""
+        return "/".join(["~", *self.cwd])
+
     def prompt(self):
-        """Сформировать приглашение вида username@hostname:~$ ."""
-        return f"{self.user}@{self.host}:~$ "
+        """Сформировать приглашение вида username@hostname:~/dir$ ."""
+        return f"{self.user}@{self.host}:{self.location()}$ "
 
     def execute(self, line):
         """Выполнить строку и вернуть вывод команды (или None)."""

@@ -20,10 +20,10 @@ class ShellTest(unittest.TestCase):
         shell, _, _ = make_shell()
         self.assertEqual(shell.prompt(), "bob@box:~$ ")
 
-    def test_stub_prints_name_and_args(self):
-        shell, out, _ = make_shell()
-        self.assertTrue(shell.run_line("ls -l x"))
-        self.assertEqual(out.getvalue(), "ls: args=['-l', 'x']\n")
+    def test_prompt_follows_cwd(self):
+        shell, _, _ = make_shell()
+        shell.run_line("cd docs")
+        self.assertEqual(shell.prompt(), "bob@box:~/docs$ ")
 
     def test_unknown_command(self):
         shell, _, err = make_shell()
