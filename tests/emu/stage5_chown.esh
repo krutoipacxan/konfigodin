@@ -1,0 +1,23 @@
+ls -l
+chown bob readme.txt
+ls -l
+chown carol:staff readme.txt bin
+ls -l
+chown :wheel readme.txt
+ls -l readme.txt
+chown bob docs
+ls -l
+ls -l docs
+chown -R bob:dev docs
+ls -l docs
+cd docs/projects
+chown carol alpha
+ls -l
+cd /
+chown
+chown bob
+chown bob /nope
+chown 1bad readme.txt
+chown : readme.txt
+chown -x bob readme.txt
+exit

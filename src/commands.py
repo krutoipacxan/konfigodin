@@ -2,12 +2,14 @@
 
 from src.args import check_arg_count, split_flags
 from src.errors import ShellError, ShellExit
-from src.vfs import VfsError, collect_stats
+from src.vfs import VfsError, collect_stats, is_valid_name, iter_nodes
 
 EXIT_CODE_MASK = 0xFF
 LS_FLAGS = "al"
 FLAG_ALL = "a"
 FLAG_LONG = "l"
+CHOWN_FLAGS = "R"
+FLAG_RECURSIVE = "R"
 OWNER_WIDTH = 8
 SIZE_WIDTH = 6
 COLUMN_GAP = "  "
@@ -93,6 +95,40 @@ def cmd_rev(shell, args):
     return "\n".join(lines)
 
 
+def parse_owner_spec(spec):
+    """Разобрать ВЛАДЕЛЕЦ[:ГРУППА] в пару (владелец, группа).
+
+    Отсутствующая часть заменяется на None (не меняется).
+    """
+    owner, _, group = spec.partition(":")
+    names = [name for name in (owner, group) if name]
+    valid = names and all(is_valid_name(name) for name in names)
+    if not valid:
+        raise ShellError(f"chown: invalid user: '{spec}'")
+    return owner or None, group or None
+
+
+def apply_owner(node, owner, group):
+    """Изменить владельца и/или группу узла (только в памяти)."""
+    if owner is not None:
+        node.owner = owner
+    if group is not None:
+        node.group = group
+
+
+def cmd_chown(shell, args):
+    """chown [-R] ВЛАДЕЛЕЦ[:ГРУППА] ПУТЬ...: сменить владельца узлов."""
+    flags, operands = split_flags("chown", args, CHOWN_FLAGS)
+    check_arg_count("chown", operands, 2, None)
+    owner, group = parse_owner_spec(operands[0])
+    for path in operands[1:]:
+        _, node = find_node(shell, "chown", path)
+        targets = iter_nodes(node) if FLAG_RECURSIVE in flags else [node]
+        for target in targets:
+            apply_owner(target, owner, group)
+    return None
+
+
 def cmd_vfs_info(shell, args):
     """Служебная команда: статистика загруженной VFS."""
     check_arg_count("vfs-info", args, 0, 0)
@@ -117,6 +153,7 @@ COMMANDS = {
     "cd": cmd_cd,
     "echo": cmd_echo,
     "rev": cmd_rev,
+    "chown": cmd_chown,
     "vfs-info": cmd_vfs_info,
     "exit": cmd_exit,
 }

@@ -6,7 +6,7 @@
 стандартная библиотека). Приглашение к вводу строится из реальных данных
 ОС: `username@hostname:~$`.
 
-## Состояние (этапы 1–4: REPL, конфигурация, VFS, основные команды)
+## Состояние (этапы 1–5 выполнены)
 
 Реализовано:
 
@@ -29,6 +29,7 @@
 | `cd [КАТАЛОГ]` | сменить текущий каталог; без аргумента — корень VFS |
 | `rev ФАЙЛ...` | вывести строки файлов VFS, развернув каждую (как `rev` в UNIX, аргументы — это файлы) |
 | `echo [СТРОКА...]` | вывести аргументы через пробел |
+| `chown [-R] ВЛАДЕЛЕЦ[:ГРУППА] ПУТЬ...` | сменить владельца и/или группу узлов VFS (только в памяти, JSON-файл не меняется). `:ГРУППА` меняет только группу, `-R` — рекурсивно для каталога. Имена: буквы, цифры, `_`, `-`, не начинаются с цифры. Виден в `ls -l` |
 | `vfs-info` | служебная: число каталогов, файлов, глубина VFS |
 | `exit [код]` | завершить работу |
 
@@ -62,6 +63,7 @@
 ```
 ./run.sh            # или: make run, или: python3 -m src
 make test           # или: python3 -m unittest discover -s tests -t .
+make demo           # прогон всех скриптов реальной ОС
 ```
 
 ### Виртуальная файловая система (этап 3)
@@ -106,6 +108,8 @@ base64) выводятся как `emulator: ...`, код возврата 1.
 `sh tests/scripts/stage2_params.sh`.
 Скрипт для разных вариантов VFS: `sh tests/scripts/stage3_vfs.sh`.
 Скрипт этапа 4: `sh tests/scripts/stage4_basic.sh`.
+Скрипт этапа 5: `sh tests/scripts/stage5_chown.sh`.
+Все скрипты сразу: `make demo`.
 
 ## Пример интерактивного сеанса
 
@@ -172,4 +176,26 @@ cd: nope: No such file or directory
 script: tests/emu/stage4_basic.esh: line 16: skipped (error)
 root@vm:~$ echo hello   world
 hello world
+```
+
+## Интерактивный сеанс (этап 5)
+
+```
+$ ./run.sh --vfs tests/vfs/deep.json
+root@vm:~$ ls -l
+d root     root       4096 bin
+d alice    staff      4096 docs
+- root     root         12 readme.txt
+root@vm:~$ chown bob readme.txt
+root@vm:~$ ls -l
+d root     root       4096 bin
+d alice    staff      4096 docs
+- bob      root         12 readme.txt
+root@vm:~$ chown -R alice:dev docs
+root@vm:~$ ls -l docs
+- alice    dev          23 notes.txt
+d alice    dev        4096 projects
+root@vm:~$ chown nobody /nope
+chown: /nope: No such file or directory
+root@vm:~$ exit
 ```

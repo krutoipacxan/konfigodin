@@ -111,3 +111,55 @@ class RevEchoTest(CommandTestCase):
 
     def test_echo_without_args_prints_nothing(self):
         self.assertEqual(self.run_ok("echo"), "")
+
+
+class ChownTest(CommandTestCase):
+    """Режимы команды chown."""
+
+    def owner_of(self, path):
+        """Вернуть пару (владелец, группа) узла."""
+        _, node = self.shell.vfs.resolve(path, [])
+        return node.owner, node.group
+
+    def test_owner_only(self):
+        self.run_ok("chown bob readme.txt")
+        self.assertEqual(self.owner_of("readme.txt"), ("bob", "root"))
+
+    def test_owner_and_group(self):
+        self.run_ok("chown bob:users readme.txt")
+        self.assertEqual(self.owner_of("readme.txt"), ("bob", "users"))
+
+    def test_group_only(self):
+        self.run_ok("chown :users readme.txt")
+        self.assertEqual(self.owner_of("readme.txt"), ("root", "users"))
+
+    def test_several_paths(self):
+        self.run_ok("chown bob readme.txt bin")
+        self.assertEqual(self.owner_of("bin")[0], "bob")
+
+    def test_directory_without_recursion(self):
+        self.run_ok("chown bob docs")
+        self.assertEqual(self.owner_of("docs")[0], "bob")
+        self.assertEqual(self.owner_of("docs/notes.txt")[0], "alice")
+
+    def test_recursive(self):
+        self.run_ok("chown -R bob:dev docs")
+        for path in ("docs", "docs/projects/alpha/todo.txt"):
+            self.assertEqual(self.owner_of(path), ("bob", "dev"))
+
+    def test_visible_in_ls(self):
+        self.run_ok("chown bob readme.txt")
+        self.assertIn("- bob ", self.run_ok("ls -l"))
+
+    def test_relative_to_cwd(self):
+        self.run_ok("cd docs")
+        self.run_ok("chown bob notes.txt")
+        self.assertEqual(self.owner_of("docs/notes.txt")[0], "bob")
+
+    def test_errors(self):
+        self.assertIn("missing operand", self.run_fail("chown"))
+        self.assertIn("missing operand", self.run_fail("chown bob"))
+        self.assertIn("No such file", self.run_fail("chown bob nope"))
+        self.assertIn("invalid user", self.run_fail("chown 1x readme.txt"))
+        self.assertIn("invalid user", self.run_fail("chown : readme.txt"))
+        self.assertIn("invalid option", self.run_fail("chown -x a b"))
