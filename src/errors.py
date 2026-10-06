@@ -12,3 +12,7 @@ class ShellExit(Exception):
         """Запомнить код возврата процесса."""
         super().__init__(code)
         self.code = code
+
+
+class ScriptError(Exception):
+    """Стартовый скрипт невозможно прочитать или выполнить."""

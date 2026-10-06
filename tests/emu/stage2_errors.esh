@@ -1,0 +1,8 @@
+ls -l /tmp
+
+cd docs
+foo bar
+cd a b
+exit abc
+ls
+exit 0
