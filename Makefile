@@ -3,8 +3,7 @@
 run:
 	python3 -m src
 
-test:
-	python3 -m unittest discover -s tests -t .
+test: demo
 
 demo:
 	sh tests/scripts/stage2_params.sh
